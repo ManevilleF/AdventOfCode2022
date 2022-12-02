@@ -8,4 +8,5 @@ I attempted to produce clean code using best practices, a very restrictive clipp
 
 | Day | Name | Done |
 |-----|------|------|
-| 01 | [Calorie Couting](day_01/src/main.rs)|  2 / 2 |
+| 01 | [Calorie Counting](day_01/src/main.rs)|  2 / 2 |
+| 02 | [Rock Paper Scissor](day_02/src/main.rs)|  2 / 2 |
