@@ -80,26 +80,24 @@ impl FromStr for Outcome {
 }
 
 fn main() {
-    let file = include_str!("../input.txt");
-    let part1_score: u32 = file
-        .clone()
+    let file: Vec<(&str, &str)> = include_str!("../input.txt")
         .lines()
-        .map(|line| {
-            let (enemy_shape, my_shape): (Shape, Shape) = line
-                .split_once(' ')
-                .map(|(a, b)| (a.parse().unwrap(), b.parse().unwrap()))
-                .unwrap();
+        .map(|line| line.split_once(' ').unwrap())
+        .collect();
+    let part1_score: u32 = file
+        .iter()
+        .map(|(a, b)| {
+            let enemy_shape = Shape::from_str(a).unwrap();
+            let my_shape = Shape::from_str(b).unwrap();
             my_shape.score_against(enemy_shape)
         })
         .sum();
     println!("Part 1 score = {part1_score}");
     let part2_score: u32 = file
-        .lines()
-        .map(|line| {
-            let (enemy_shape, outcome): (Shape, Outcome) = line
-                .split_once(' ')
-                .map(|(a, b)| (a.parse().unwrap(), b.parse().unwrap()))
-                .unwrap();
+        .iter()
+        .map(|(a, b)| {
+            let enemy_shape = Shape::from_str(a).unwrap();
+            let outcome = Outcome::from_str(b).unwrap();
             let my_shape = enemy_shape.shape_to_outcome(outcome);
             my_shape.score_against(enemy_shape)
         })
