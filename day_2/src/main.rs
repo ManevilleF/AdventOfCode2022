@@ -20,14 +20,14 @@ impl Shape {
     pub const fn shape_to_outcome(self, outcome: Outcome) -> Self {
         match outcome {
             Outcome::Win => match self {
-                Shape::Rock => Self::Paper,
-                Shape::Paper => Self::Scissor,
-                Shape::Scissor => Self::Rock,
+                Self::Rock => Self::Paper,
+                Self::Paper => Self::Scissor,
+                Self::Scissor => Self::Rock,
             },
             Outcome::Loose => match self {
-                Shape::Rock => Self::Scissor,
-                Shape::Paper => Self::Rock,
-                Shape::Scissor => Self::Paper,
+                Self::Rock => Self::Scissor,
+                Self::Paper => Self::Rock,
+                Self::Scissor => Self::Paper,
             },
             Outcome::Draw => self,
         }
