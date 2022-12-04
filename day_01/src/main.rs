@@ -16,5 +16,6 @@ fn main() {
     values.sort_unstable();
     values.reverse();
     let [a, b, c] = [values[0], values[1], values[2]];
-    println!("max values: [{}, {}, {}]\ntotal = {} ", a, b, c, a + b + c);
+    println!("Part 1: Max value = {}", a);
+    println!("Part 2: Total = {} ", a + b + c);
 }
