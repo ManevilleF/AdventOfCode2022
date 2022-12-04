@@ -11,3 +11,4 @@ I attempted to produce clean code using best practices, a very restrictive clipp
 | 01 | [Calorie Counting](day_01/src/main.rs)|  2 / 2 |
 | 02 | [Rock Paper Scissor](day_02/src/main.rs)|  2 / 2 |
 | 03 | [Rucksack Reorganization](day_03/src/main.rs)|  2 / 2 |
+| 04 | [Camp cleanup](day_04/src/main.rs)|  2 / 2 |
