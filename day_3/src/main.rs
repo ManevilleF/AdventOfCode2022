@@ -31,9 +31,9 @@ impl FromStr for RuckSack {
         let (left, right) = chars.split_at(chars.len() / 2);
 
         let value = |item: &char| {
-            if ('a'..='z').contains(item) {
+            if item.is_ascii_lowercase() {
                 Ok((*item as u8).saturating_sub(b'a') + 1)
-            } else if ('A'..='Z').contains(item) {
+            } else if item.is_ascii_uppercase() {
                 Ok((*item as u8).saturating_sub(b'A') + 27)
             } else {
                 Err(format!("{item} is not a valid item"))
