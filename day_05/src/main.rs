@@ -80,16 +80,10 @@ impl FromStr for Stacks {
         let amount = last_line.split_whitespace().count();
         let mut stacks = vec![Stack::default(); amount];
         for line in lines {
-            let mut cursor = 1;
-            let mut index = 0;
-            let line: Vec<_> = line.chars().collect();
-            while index < amount {
-                let c = line[cursor];
+            for (index, c) in line.chars().skip(1).step_by(4).enumerate() {
                 if c.is_ascii_uppercase() {
                     stacks[index].crates.push_back(c);
                 }
-                cursor += 4;
-                index += 1;
             }
         }
         Ok(Self { stacks })
