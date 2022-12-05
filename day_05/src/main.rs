@@ -58,11 +58,14 @@ impl FromStr for MoveInstruction {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let str = s.replace("move", "").replace("from", "").replace("to", "");
-        let parts: Vec<&str> = str.split_whitespace().collect();
-        let parts: [&str; 3] = parts
+        let parts: Vec<_> = str
+            .split_whitespace()
+            .map(usize::from_str)
+            .collect::<Result<_, _>>()
+            .map_err(|e| e.to_string())?;
+        let [amount, from_index, to_index]: [usize; 3] = parts
             .try_into()
             .map_err(|_| format!("Expected 3 numeric values in `{str}`"))?;
-        let [amount, from_index, to_index] = parts.map(|part| part.parse().unwrap());
         Ok(Self {
             amount,
             from_index,
