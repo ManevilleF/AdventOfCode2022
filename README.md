@@ -13,3 +13,4 @@ I attempted to produce clean code using best practices, a very restrictive clipp
 | 03 | [Rucksack Reorganization](day_03/src/main.rs)|  2 / 2 |
 | 04 | [Camp cleanup](day_04/src/main.rs)|  2 / 2 |
 | 05 | [Supply Stack](day_05/src/main.rs)|  2 / 2 |
+| 06 | [Tuning Trouble](day_06/src/main.rs)|  2 / 2 |
