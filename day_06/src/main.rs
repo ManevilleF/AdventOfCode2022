@@ -5,7 +5,7 @@ fn find_marker(str: &str, window: usize) -> Option<usize> {
         .windows(window)
         .into_iter()
         .position(|items| {
-            let set: HashSet<_> = items.iter().copied().collect();
+            let set: HashSet<_> = items.iter().collect();
             set.len() == window
         })
         .map(|p| p + window)
