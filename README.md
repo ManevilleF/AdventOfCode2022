@@ -14,3 +14,4 @@ I attempted to produce clean code using best practices, a very restrictive clipp
 | 04 | [Camp cleanup](day_04/src/main.rs)|  2 / 2 |
 | 05 | [Supply Stack](day_05/src/main.rs)|  2 / 2 |
 | 06 | [Tuning Trouble](day_06/src/main.rs)|  2 / 2 |
+| 07 | [No Space Left On Device](day_07/src/main.rs)|  2 / 2 |
