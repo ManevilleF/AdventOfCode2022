@@ -3,30 +3,10 @@ use std::{collections::HashMap, str::FromStr};
 const DISK_SPACE: usize = 70_000_000;
 const REQUIRED_SPACE: usize = 30_000_000;
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 struct Dirs(pub HashMap<String, usize>);
 
 impl Dirs {
-    pub fn push_entry(&mut self, path: &[String], entry: &str) -> Result<(), String> {
-        let (prefix, name) = entry
-            .split_once(' ')
-            .ok_or_else(|| format!("`{entry}` is not a valid entry"))?;
-        if prefix == "dir" {
-            let path_str = format!("{}{name}", path.join(""));
-            self.0.entry(path_str).or_insert(0);
-        } else {
-            let size: usize = prefix
-                .parse()
-                .map_err(|_| format!("{prefix} is not a valid file size"))?;
-            let mut dir_path = String::new();
-            for p in path {
-                dir_path.push_str(p);
-                *self.0.entry(dir_path.clone()).or_default() += size;
-            }
-        }
-        Ok(())
-    }
-
     pub fn part1(&self) -> usize {
         self.0
             .values()
@@ -52,25 +32,40 @@ impl FromStr for Dirs {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut dirs = Self::default();
-        let mut current_path = Vec::new();
+        let mut dirs = HashMap::new();
+        let mut path = Vec::new();
 
         for section in s.lines() {
             match section {
                 "$ ls" => {}
                 "$ cd .." => {
-                    current_path.pop();
+                    path.pop();
                 }
                 section if section.starts_with("$ cd ") => {
                     let dir_name = section[5..].to_string();
-                    current_path.push(dir_name);
+                    path.push(dir_name);
                 }
                 _ => {
-                    dirs.push_entry(&current_path, section)?;
+                    let (prefix, name) = section
+                        .split_once(' ')
+                        .ok_or_else(|| format!("`{section}` is not a valid entry"))?;
+                    if prefix == "dir" {
+                        let path_str = format!("{}{name}", path.join(""));
+                        dirs.entry(path_str).or_insert(0);
+                    } else {
+                        let size: usize = prefix
+                            .parse()
+                            .map_err(|_| format!("{prefix} is not a valid file size"))?;
+                        let mut dir_path = String::new();
+                        for p in &path {
+                            dir_path.push_str(p);
+                            *dirs.entry(dir_path.clone()).or_default() += size;
+                        }
+                    }
                 }
             }
         }
-        Ok(dirs)
+        Ok(Self(dirs))
     }
 }
 
