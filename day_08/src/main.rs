@@ -18,6 +18,7 @@ impl Map {
                         let right = &line[(*x + 1)..];
                         let mut up = (0..y).map(|i| self.trees[i][*x]);
                         let mut down = ((y + 1)..max_y).map(|i| self.trees[i][*x]);
+
                         up.all(|n| n < **v)
                             || down.all(|n| n < **v)
                             || left.iter().all(|n| n < *v)
@@ -28,13 +29,17 @@ impl Map {
             .sum()
     }
 
+    fn score(v: u8, mut iter: impl Iterator<Item = u8>, default: usize) -> usize {
+        iter.position(|n| n >= v).unwrap_or(default) + 1
+    }
+
     fn max_scenic_score(&self) -> Option<usize> {
         let max_y = self.trees.len();
         self.trees
             .iter()
             .enumerate()
             .flat_map(|(y, line)| {
-                line.iter().enumerate().map(move |(x, v)| {
+                line.iter().copied().enumerate().map(move |(x, v)| {
                     if y == 0 || x == 0 || x >= line.len() - 1 || y >= max_y - 1 {
                         return 0;
                     }
@@ -42,17 +47,12 @@ impl Map {
                     let left = &line[..x];
                     let right = &line[(x + 1)..];
                     let up = (0..y).map(|i| self.trees[i][x]);
-                    let mut down = ((y + 1)..max_y).map(|i| self.trees[i][x]);
+                    let down = ((y + 1)..max_y).map(|i| self.trees[i][x]);
 
-                    let score = |pos: Option<usize>, default: usize| pos.unwrap_or(default) + 1;
-
-                    score(up.rev().position(|n| n >= *v), y.saturating_sub(1))
-                        * score(down.position(|n| n >= *v), max_y.saturating_sub(y + 2))
-                        * score(left.iter().rev().position(|n| n >= v), x.saturating_sub(1))
-                        * score(
-                            right.iter().position(|n| n >= v),
-                            line.len().saturating_sub(x + 2),
-                        )
+                    Self::score(v, up.rev(), y.saturating_sub(1))
+                        * Self::score(v, down, max_y.saturating_sub(y + 2))
+                        * Self::score(v, left.iter().rev().copied(), x.saturating_sub(1))
+                        * Self::score(v, right.iter().copied(), line.len().saturating_sub(x + 2))
                 })
             })
             .max()
