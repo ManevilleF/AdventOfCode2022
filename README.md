@@ -15,3 +15,4 @@ I attempted to produce clean code using best practices, a very restrictive clipp
 | 05 | [Supply Stack](day_05/src/main.rs)|  2 / 2 |
 | 06 | [Tuning Trouble](day_06/src/main.rs)|  2 / 2 |
 | 07 | [No Space Left On Device](day_07/src/main.rs)|  2 / 2 |
+| 08 | [Treetop Tree House](day_08/src/main.rs)|  2 / 2 |
