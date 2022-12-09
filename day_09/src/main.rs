@@ -24,7 +24,7 @@ impl<const HIST: usize> Rope<HIST> {
             let [diff_x, diff_y] = [prev[0] - coord[0], prev[1] - coord[1]];
 
             if diff_x.abs() <= 1 && diff_y.abs() <= 1 {
-                continue;
+                return;
             }
             coord[0] += diff_x.signum();
             coord[1] += diff_y.signum();
