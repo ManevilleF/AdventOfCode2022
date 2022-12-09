@@ -2,35 +2,41 @@ use std::collections::HashSet;
 
 type Coords = [i16; 2];
 
-struct Rope {
-    head: Coords,
-    tail: Coords,
-    history: HashSet<Coords>,
+struct Rope<const HIST: usize = 1> {
+    head_history: [Coords; HIST],
+    tail_history: HashSet<Coords>,
 }
 
-impl Rope {
+impl<const HIST: usize> Rope<HIST> {
     pub fn new() -> Self {
         Self {
-            head: [0; 2],
-            tail: [0; 2],
-            history: vec![[0; 2]].into_iter().collect(),
+            head_history: [[0; 2]; HIST],
+            tail_history: vec![[0; 2]].into_iter().collect(),
         }
     }
 
     pub fn move_head(&mut self, [x, y]: Coords) {
-        let original_pos = self.head;
-        self.head[0] += x;
-        self.head[1] += y;
-        if self.head[0].abs_diff(self.tail[0]) > 1 || self.head[1].abs_diff(self.tail[1]) > 1 {
-            self.tail = original_pos;
-            self.history.insert(self.tail);
+        self.head_history[0][0] += x;
+        self.head_history[0][1] += y;
+        for i in 1..HIST {
+            let prev = self.head_history[i - 1];
+            let coord = &mut self.head_history[i];
+            let [diff_x, diff_y] = [prev[0] - coord[0], prev[1] - coord[1]];
+
+            if diff_x.abs() <= 1 && diff_y.abs() <= 1 {
+                continue;
+            }
+            coord[0] += diff_x.signum();
+            coord[1] += diff_y.signum();
         }
+        self.tail_history.insert(self.head_history[HIST - 1]);
     }
 }
 
 fn main() {
     let input = include_str!("../input.txt");
-    let mut rope = Rope::new();
+    let mut rope_1 = Rope::<2>::new();
+    let mut rope_2 = Rope::<10>::new();
     for line in input.lines() {
         let (dir, count) = line.split_once(' ').unwrap();
         let dir = match dir {
@@ -42,8 +48,10 @@ fn main() {
         };
         let count: usize = count.parse().unwrap();
         for _ in 0..count {
-            rope.move_head(dir);
+            rope_1.move_head(dir);
+            rope_2.move_head(dir);
         }
     }
-    println!("Part 1: {}", rope.history.len());
+    println!("Part 1: {}", rope_1.tail_history.len());
+    println!("Part 2: {}", rope_2.tail_history.len());
 }
