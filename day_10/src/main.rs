@@ -1,4 +1,3 @@
-#[derive(Debug)]
 struct Register {
     value: i32,
     add_queue: Vec<i32>,
@@ -33,7 +32,6 @@ impl Register {
 
 fn main() {
     let input = include_str!("../input.txt");
-    let checks = [20, 60, 100, 140, 180, 220];
     let mut register = Register::new();
 
     for line in input.lines() {
@@ -50,7 +48,7 @@ fn main() {
     let mut crt = String::new();
     while !register.is_done() {
         // Part 1
-        if checks.contains(&cycle) {
+        if matches!(cycle, 20 | 60 | 100 | 140 | 180 | 220) {
             strength_sum += register.value * cycle;
         }
         // Part 2
