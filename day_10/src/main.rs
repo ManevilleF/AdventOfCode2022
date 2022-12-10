@@ -59,14 +59,24 @@ fn main() {
 
     let mut cycle = 1;
     let mut sum = 0;
+    let mut crt = String::new();
     while !register.is_done() {
+        let reg_value = register.value;
+        let crt_pos = cycle % 40 - 1;
+        if reg_value == crt_pos || reg_value + 1 == crt_pos || reg_value - 1 == crt_pos {
+            crt.push('#');
+        } else {
+            crt.push(' ');
+        }
+        if cycle % 40 == 0 {
+            crt.push('\n');
+        }
         if checks.contains(&cycle) {
-            let strength = register.value * cycle;
-            println!("Cycle {cycle}: strength = {strength}");
-            sum += strength;
+            sum += register.value * cycle;
         }
         register.cycle();
         cycle += 1;
     }
     println!("Part 1: {sum}");
+    println!("Part 2: \n{crt}");
 }

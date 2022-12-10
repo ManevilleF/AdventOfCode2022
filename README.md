@@ -17,4 +17,4 @@ I attempted to produce clean code using best practices, a very restrictive clipp
 | 07 | [No Space Left On Device](day_07/src/main.rs)|  2 / 2 |
 | 08 | [Treetop Tree House](day_08/src/main.rs)|  2 / 2 |
 | 09 | [Rope Bridge](day_09/src/main.rs)|  2 / 2 |
-| 10 | [Cathode Ray Tube](day_10/src/main.rs)|  1 / 2 |
+| 10 | [Cathode Ray Tube](day_10/src/main.rs)|  2 / 2 |
