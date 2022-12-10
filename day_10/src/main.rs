@@ -1,42 +1,33 @@
-#[derive(Debug, Clone, Copy)]
-enum Instruction {
-    Noop,
-    Addx(i32),
-}
-
 #[derive(Debug)]
 struct Register {
     value: i32,
-    instructions: Vec<Instruction>,
+    add_queue: Vec<i32>,
 }
 
 impl Register {
     pub const fn new() -> Self {
         Self {
             value: 1,
-            instructions: Vec::new(),
+            add_queue: Vec::new(),
         }
     }
 
     pub fn is_done(&self) -> bool {
-        self.instructions.is_empty()
+        self.add_queue.is_empty()
     }
 
-    pub fn push(&mut self, instruction: Instruction) {
-        if matches!(instruction, Instruction::Addx(_)) {
-            self.instructions.push(Instruction::Noop);
+    pub fn push(&mut self, add_value: i32) {
+        if add_value != 0 {
+            self.add_queue.push(0);
         }
-        self.instructions.push(instruction);
+        self.add_queue.push(add_value);
     }
 
     pub fn cycle(&mut self) {
         if self.is_done() {
             return;
         }
-        match self.instructions.remove(0) {
-            Instruction::Noop => (),
-            Instruction::Addx(v) => self.value += v,
-        }
+        self.value += self.add_queue.remove(0);
     }
 }
 
@@ -46,19 +37,16 @@ fn main() {
     let mut register = Register::new();
 
     for line in input.lines() {
-        let instruction = if line == "noop" {
-            Instruction::Noop
+        let add_value = if let Some(("addx", v)) = line.split_once(' ') {
+            v.parse().unwrap()
         } else {
-            match line.split_once(' ') {
-                Some(("addx", v)) => Instruction::Addx(v.parse().unwrap()),
-                _ => panic!("{line} is not a valid instruction"),
-            }
+            0
         };
-        register.push(instruction);
+        register.push(add_value);
     }
 
     let mut cycle = 1;
-    let mut sum = 0;
+    let mut strength_sum = 0;
     let mut crt = String::new();
     while !register.is_done() {
         let reg_value = register.value;
@@ -72,11 +60,11 @@ fn main() {
             crt.push('\n');
         }
         if checks.contains(&cycle) {
-            sum += register.value * cycle;
+            strength_sum += register.value * cycle;
         }
         register.cycle();
         cycle += 1;
     }
-    println!("Part 1: {sum}");
+    println!("Part 1: {strength_sum}");
     println!("Part 2: \n{crt}");
 }
