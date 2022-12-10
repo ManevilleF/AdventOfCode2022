@@ -37,10 +37,10 @@ fn main() {
     let mut register = Register::new();
 
     for line in input.lines() {
-        let add_value = if let Some(("addx", v)) = line.split_once(' ') {
-            v.parse().unwrap()
-        } else {
-            0
+        let add_value = match &line[..4] {
+            "noop" => 0,
+            "addx" => line[5..].parse().unwrap(),
+            _ => panic!("{line} is not a valid instruction"),
         };
         register.push(add_value);
     }
@@ -49,9 +49,16 @@ fn main() {
     let mut strength_sum = 0;
     let mut crt = String::new();
     while !register.is_done() {
-        let reg_value = register.value;
+        // Part 1
+        if checks.contains(&cycle) {
+            strength_sum += register.value * cycle;
+        }
+        // Part 2
         let crt_pos = cycle % 40 - 1;
-        if reg_value == crt_pos || reg_value + 1 == crt_pos || reg_value - 1 == crt_pos {
+        if register.value == crt_pos
+            || register.value + 1 == crt_pos
+            || register.value - 1 == crt_pos
+        {
             crt.push('#');
         } else {
             crt.push(' ');
@@ -59,9 +66,7 @@ fn main() {
         if cycle % 40 == 0 {
             crt.push('\n');
         }
-        if checks.contains(&cycle) {
-            strength_sum += register.value * cycle;
-        }
+        // Cycle
         register.cycle();
         cycle += 1;
     }
