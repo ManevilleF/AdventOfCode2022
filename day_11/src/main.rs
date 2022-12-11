@@ -12,7 +12,7 @@ enum OpSign {
 #[derive(Debug, Copy, Clone)]
 enum OpVal {
     Old,
-    Val(u64),
+    Val(Item),
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -25,7 +25,7 @@ struct Operation {
 struct Monkey {
     items: Vec<Item>,
     operation: Operation,
-    divisible_by: u64,
+    divisible_by: Item,
     to_monkey_true: usize,
     to_monkey_false: usize,
     inspections: usize,
@@ -35,9 +35,10 @@ struct Monkeys(Vec<Monkey>);
 
 impl Monkeys {
     fn run(&mut self, amount: usize, divide: bool) {
+        let common_divisor = self.0.iter().map(|m| m.divisible_by).product();
         for _ in 0..amount {
             for i in 0..self.0.len() {
-                let thrown_items = self.0[i].run_turn(divide);
+                let thrown_items = self.0[i].run_turn(common_divisor, divide);
                 for (id, items) in thrown_items {
                     self.0[id].items.extend(items);
                 }
@@ -60,7 +61,7 @@ impl Operation {
 }
 
 impl Monkey {
-    pub fn run_turn(&mut self, divide: bool) -> ThrownItems {
+    pub fn run_turn(&mut self, common_divisor: Item, divide: bool) -> ThrownItems {
         let mut items = ThrownItems::new();
         self.inspections += self.items.len();
         for item in self.items.drain(..) {
@@ -73,7 +74,7 @@ impl Monkey {
             } else {
                 self.to_monkey_false
             };
-            items.entry(target).or_default().push(item);
+            items.entry(target).or_default().push(item % common_divisor);
         }
         items
     }
@@ -177,7 +178,7 @@ fn main() {
         inspections[0] * inspections[1]
     );
     // part 2
-    monkeys_2.run(1000, false);
+    monkeys_2.run(10000, false);
     let mut inspections: Vec<_> = monkeys_2.0.iter().map(|m| m.inspections).collect();
     inspections.sort_unstable();
     inspections.reverse();
