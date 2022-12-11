@@ -48,7 +48,7 @@ impl Monkeys {
 }
 
 impl Operation {
-    pub fn resolve(&self, old: Item) -> Item {
+    pub const fn resolve(&self, old: Item) -> Item {
         let val = match self.val {
             OpVal::Old => old,
             OpVal::Val(v) => v,
@@ -67,7 +67,7 @@ impl Monkey {
         for item in self.items.drain(..) {
             let mut item = self.operation.resolve(item);
             if divide {
-                item = item / 3;
+                item /= 3;
             }
             let target = if item % self.divisible_by == 0 {
                 self.to_monkey_true
@@ -88,15 +88,15 @@ impl FromStr for Operation {
             .split_once('=')
             .ok_or_else(|| format!("{s} is not a valid operation"))?;
         let elems: Vec<_> = op.split_whitespace().collect();
-        if elems.len() != 3 {
-            return Err(format!("{op} should have two elements and an operator"))?;
-        }
-        let sign = match elems[1] {
+        let [_, op, right]: [_; 3] = elems
+            .try_into()
+            .map_err(|_| format!("{op} should have two elements and an operator"))?;
+        let sign = match op {
             "+" => OpSign::Add,
             "*" => OpSign::Mul,
             v => return Err(format!("{v} is not a valid operator")),
         };
-        let val = match elems[2] {
+        let val = match right {
             "old" => OpVal::Old,
             v => OpVal::Val(
                 v.parse()
