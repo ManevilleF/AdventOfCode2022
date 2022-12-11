@@ -118,32 +118,31 @@ impl FromStr for Monkey {
             let (_, right) = s.split_once(':').ok_or_else(|| format!("{s} is invalid"))?;
             Ok(right.trim().to_owned())
         };
-        let get_las_num =
+        let get_last_num =
             |s: &str| -> Option<usize> { s.split_whitespace().last().and_then(|v| v.parse().ok()) };
 
-        let items_str = get_right(lines.next())?;
-        let items = items_str
+        let items = get_right(lines.next())?
             .split(',')
             .map(str::trim)
             .map(Item::from_str)
             .collect::<Result<_, _>>()
-            .map_err(|_| format!("{items_str} is invalid"))?;
+            .map_err(|_| "Item list is invalid".to_string())?;
 
         let operation = get_right(lines.next()).map(|s| Operation::from_str(&s))??;
 
         let divisible_by = lines
             .next()
-            .and_then(get_las_num)
+            .and_then(get_last_num)
             .ok_or_else(|| String::from("Invalid divisible by"))?
             as Item;
 
         let to_monkey_true = lines
             .next()
-            .and_then(get_las_num)
+            .and_then(get_last_num)
             .ok_or_else(|| String::from("Invalid TRUE target monkey"))?;
         let to_monkey_false = lines
             .next()
-            .and_then(get_las_num)
+            .and_then(get_last_num)
             .ok_or_else(|| String::from("Invalid FALSE target monkey"))?;
         Ok(Self {
             items,
