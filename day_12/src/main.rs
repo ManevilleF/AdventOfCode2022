@@ -60,23 +60,20 @@ impl HeightMap {
             .map(|(y, line)| {
                 line.bytes()
                     .enumerate()
-                    .map(|(x, byte)| {
-                        let b = match byte {
-                            b'S' => {
-                                starts.push([x, y]);
-                                b'a'
-                            }
-                            b'E' => {
-                                end = [x, y];
-                                b'z'
-                            }
-                            b'a' if multistart => {
-                                starts.push([x, y]);
-                                b'a'
-                            }
-                            b => b,
-                        };
-                        b - b'a'
+                    .map(|(x, byte)| match byte {
+                        b'S' => {
+                            starts.push([x, y]);
+                            b'a'
+                        }
+                        b'E' => {
+                            end = [x, y];
+                            b'z'
+                        }
+                        b'a' if multistart => {
+                            starts.push([x, y]);
+                            b'a'
+                        }
+                        b => b,
                     })
                     .collect()
             })
