@@ -14,22 +14,20 @@ impl HeightMap {
         self.map.get(y).and_then(|row| row.get(x))
     }
 
-    fn valid_neighbors(&self, [x, y]: Coord) -> Vec<Coord> {
+    fn valid_neighbors(&self, [x, y]: Coord) -> HashSet<Coord> {
         let value = match self.get([x, y]) {
-            None => return vec![],
+            None => return HashSet::new(),
             Some(v) => v,
         };
-        let mut neighbors = vec![
+        [
             [x + 1, y],
             [x.saturating_sub(1), y],
             [x, y + 1],
             [x, y.saturating_sub(1)],
-        ];
-        neighbors.dedup();
-        neighbors
-            .into_iter()
-            .filter_map(|c| self.get(c).and_then(|v| (*v <= value + 1).then_some(c)))
-            .collect()
+        ]
+        .into_iter()
+        .filter_map(|c| self.get(c).and_then(|v| (*v <= value + 1).then_some(c)))
+        .collect()
     }
 
     fn steps(&self) -> Option<usize> {
@@ -40,8 +38,7 @@ impl HeightMap {
             visited.insert(*start);
         }
         while let Some((coord, cost)) = paths.pop_front() {
-            let neighbors = self.valid_neighbors(coord);
-            for c in neighbors {
+            for c in self.valid_neighbors(coord) {
                 if c == self.end {
                     return Some(cost + 1);
                 }
@@ -55,7 +52,7 @@ impl HeightMap {
     }
 
     fn parse(s: &str, multistart: bool) -> Self {
-        let mut start = Vec::new();
+        let mut starts = Vec::new();
         let mut end = [0; 2];
         let map = s
             .lines()
@@ -66,7 +63,7 @@ impl HeightMap {
                     .map(|(x, byte)| {
                         let b = match byte {
                             b'S' => {
-                                start.push([x, y]);
+                                starts.push([x, y]);
                                 b'a'
                             }
                             b'E' => {
@@ -74,7 +71,7 @@ impl HeightMap {
                                 b'z'
                             }
                             b'a' if multistart => {
-                                start.push([x, y]);
+                                starts.push([x, y]);
                                 b'a'
                             }
                             b => b,
@@ -84,11 +81,7 @@ impl HeightMap {
                     .collect()
             })
             .collect();
-        Self {
-            map,
-            starts: start,
-            end,
-        }
+        Self { map, starts, end }
     }
 }
 
