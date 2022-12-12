@@ -18,4 +18,5 @@ I attempted to produce clean code using best practices, a very restrictive clipp
 | 08 | [Treetop Tree House](day_08/src/main.rs)|  2 / 2 |
 | 09 | [Rope Bridge](day_09/src/main.rs)|  2 / 2 |
 | 10 | [Cathode Ray Tube](day_10/src/main.rs)|  2 / 2 |
-| 11 | [Monkey in the middle](day_11/src/main.rs)|  1 / 2 |
+| 11 | [Monkey in the middle](day_11/src/main.rs)|  2 / 2 |
+| 12 | [Hill Climbing Algorithm](day_12/src/main.rs)| 2 / 2 |
