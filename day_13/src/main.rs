@@ -4,7 +4,7 @@ type Items = Vec<Item>;
 
 #[derive(Debug, Clone)]
 enum Item {
-    Char(u8),
+    Num(u8),
     List(Items),
 }
 
@@ -17,33 +17,24 @@ struct Pair {
 impl Item {
     fn is_ordered(self, other: Self) -> Option<bool> {
         println!("Comparing:\n{self}\n{other}");
-        match [self, other] {
-            [Self::Char(a), Self::Char(b)] => {
-                if a == b {
-                    None
-                } else {
-                    Some(a < b)
-                }
+        let [a, b] = match [self, other] {
+            [Self::Num(a), Self::Num(b)] => {
+                return (a != b).then_some(a < b);
             }
-            [Self::Char(a), Self::List(b)] => {
-                Self::List(vec![Self::Char(a)]).is_ordered(Self::List(b))
-            }
-            [Self::List(a), Self::Char(b)] => {
-                Self::List(a).is_ordered(Self::List(vec![Self::Char(b)]))
-            }
-            [Self::List(a), Self::List(b)] => {
-                let mut iter_a = a.into_iter();
-                let mut iter_b = b.into_iter();
-                loop {
-                    match [iter_a.next(), iter_b.next()] {
-                        [None, None] => return None,
-                        [None, Some(_)] => return Some(true),
-                        [Some(_), None] => return Some(false),
-                        [Some(item), Some(other)] => {
-                            if let Some(v) = item.is_ordered(other) {
-                                return Some(v);
-                            }
-                        }
+            [Self::Num(a), Self::List(b)] => [vec![Self::Num(a)], b],
+            [Self::List(a), Self::Num(b)] => [a, vec![Self::Num(b)]],
+            [Self::List(a), Self::List(b)] => [a, b],
+        };
+        let mut iter_a = a.into_iter();
+        let mut iter_b = b.into_iter();
+        loop {
+            match [iter_a.next(), iter_b.next()] {
+                [None, None] => return None,
+                [None, Some(_)] => return Some(true),
+                [Some(_), None] => return Some(false),
+                [Some(item), Some(other)] => {
+                    if let Some(v) = item.is_ordered(other) {
+                        return Some(v);
                     }
                 }
             }
@@ -77,7 +68,7 @@ impl FromStr for Item {
                 let num = u8::from_str(&current_num_str)
                     .map_err(|_| format!("`{current_num_str}` is not a valid number"))?;
                 current_num_str.clear();
-                last.push(Self::Char(num));
+                last.push(Self::Num(num));
             }
             if c == ']' {
                 if queues.len() > 1 {
@@ -120,7 +111,7 @@ impl FromStr for Pair {
 impl Display for Item {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let str = match self {
-            Self::Char(c) => c.to_string(),
+            Self::Num(n) => n.to_string(),
             Self::List(l) => {
                 let chars: Vec<_> = l.iter().map(ToString::to_string).collect();
                 format!("[{}]", chars.join(","))
@@ -131,7 +122,7 @@ impl Display for Item {
 }
 
 fn main() {
-    let input = include_str!("../test_input.txt");
+    let input = include_str!("../input.txt");
     let pairs: Vec<Pair> = input
         .split("\n\n")
         .map(Pair::from_str)
