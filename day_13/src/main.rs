@@ -15,7 +15,7 @@ struct Pair {
 }
 
 impl Item {
-    fn is_ordered(self, other: Self) -> Option<bool> {
+    fn ordered_with(self, other: Self) -> Option<bool> {
         println!("Comparing:\n{self}\n{other}");
         let [a, b] = match [self, other] {
             [Self::Num(a), Self::Num(b)] => {
@@ -33,7 +33,7 @@ impl Item {
                 [None, Some(_)] => return Some(true),
                 [Some(_), None] => return Some(false),
                 [Some(item), Some(other)] => {
-                    if let Some(v) = item.is_ordered(other) {
+                    if let Some(v) = item.ordered_with(other) {
                         return Some(v);
                     }
                 }
@@ -70,14 +70,12 @@ impl FromStr for Item {
                 current_num_str.clear();
                 last.push(Self::Num(num));
             }
-            if c == ']' {
-                if queues.len() > 1 {
-                    let items = queues
-                        .pop()
-                        .ok_or_else(|| format!("`{s}` has an invalid `{c}` char"))?;
-                    let last = queues.last_mut().unwrap();
-                    last.push(Item::List(items));
-                }
+            if c == ']' && queues.len() > 1 {
+                let items = queues
+                    .pop()
+                    .ok_or_else(|| format!("`{s}` has an invalid `{c}` char"))?;
+                let last = queues.last_mut().unwrap();
+                last.push(Self::List(items));
             }
         }
         if queues.len() != 1 {
@@ -133,7 +131,7 @@ fn main() {
         .into_iter()
         .enumerate()
         .filter_map(|(i, pair)| {
-            let is_ordered = pair.left.is_ordered(pair.right);
+            let is_ordered = pair.left.ordered_with(pair.right);
             println!("{is_ordered:?}\n");
             is_ordered.unwrap_or(false).then_some(i + 1)
         })
