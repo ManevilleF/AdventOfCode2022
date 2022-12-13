@@ -1,8 +1,8 @@
-use std::{fmt::Display, str::FromStr};
+use std::{cmp::Ordering, fmt::Display, fs::read_to_string, str::FromStr};
 
 type Items = Vec<Item>;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 enum Item {
     Num(u8),
     List(Items),
@@ -14,31 +14,20 @@ struct Pair {
     right: Item,
 }
 
-impl Item {
-    fn ordered_with(self, other: Self) -> Option<bool> {
-        println!("Comparing:\n{self}\n{other}");
-        let [a, b] = match [self, other] {
-            [Self::Num(a), Self::Num(b)] => {
-                return (a != b).then_some(a < b);
-            }
-            [Self::Num(a), Self::List(b)] => [vec![Self::Num(a)], b],
-            [Self::List(a), Self::Num(b)] => [a, vec![Self::Num(b)]],
-            [Self::List(a), Self::List(b)] => [a, b],
-        };
-        let mut iter_a = a.into_iter();
-        let mut iter_b = b.into_iter();
-        loop {
-            match [iter_a.next(), iter_b.next()] {
-                [None, None] => return None,
-                [None, Some(_)] => return Some(true),
-                [Some(_), None] => return Some(false),
-                [Some(item), Some(other)] => {
-                    if let Some(v) = item.ordered_with(other) {
-                        return Some(v);
-                    }
-                }
-            }
+impl PartialOrd for Item {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        match [self, other] {
+            [Self::Num(a), Self::Num(b)] => a.partial_cmp(b),
+            [Self::Num(a), Self::List(b)] => [Self::Num(*a)].as_slice().partial_cmp(b.as_slice()),
+            [Self::List(a), Self::Num(b)] => a.as_slice().partial_cmp([Self::Num(*b)].as_slice()),
+            [Self::List(a), Self::List(b)] => a.partial_cmp(b),
         }
+    }
+}
+
+impl Ord for Item {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.partial_cmp(other).unwrap_or(Ordering::Equal)
     }
 }
 
@@ -120,21 +109,33 @@ impl Display for Item {
 }
 
 fn main() {
-    let input = include_str!("../input.txt");
+    let mut input = read_to_string("input.txt").unwrap();
+
+    // Part 1
     let pairs: Vec<Pair> = input
         .split("\n\n")
         .map(Pair::from_str)
         .collect::<Result<_, _>>()
         .unwrap();
-    // println!("{pairs:#?}");
     let ordered_pairs: usize = pairs
         .into_iter()
         .enumerate()
-        .filter_map(|(i, pair)| {
-            let is_ordered = pair.left.ordered_with(pair.right).unwrap();
-            println!("ORDERED = {is_ordered}\n");
-            is_ordered.then_some(i + 1)
-        })
+        .filter_map(|(i, pair)| (pair.left < pair.right).then_some(i + 1))
         .sum();
     println!("Part 1: {}", ordered_pairs);
+    // Part 2
+    input.push_str("[[2]]");
+    input.push('\n');
+    input.push_str("[[6]]");
+    let mut items: Items = input
+        .lines()
+        .filter(|l| !l.is_empty())
+        .map(Item::from_str)
+        .collect::<Result<_, _>>()
+        .unwrap();
+    items.sort_unstable();
+    let items: Vec<_> = items.into_iter().map(|i| i.to_string()).collect();
+    let a = items.iter().position(|s| s == "[[2]]").unwrap() + 1;
+    let b = items.iter().position(|s| s == "[[6]]").unwrap() + 1;
+    println!("Part 2: {a} * {b} = {}", a * b);
 }

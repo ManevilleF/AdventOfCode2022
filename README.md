@@ -20,4 +20,4 @@ I attempted to produce clean code using best practices, a very restrictive clipp
 | 10 | [Cathode Ray Tube](day_10/src/main.rs)| ⭐ ⭐ |
 | 11 | [Monkey in the middle](day_11/src/main.rs)| ⭐ ⭐ |
 | 12 | [Hill Climbing Algorithm](day_12/src/main.rs)| ⭐ ⭐ |
-| 13 | [Distress Signal](day_13/src/main.rs)| ⭐ |
+| 13 | [Distress Signal](day_13/src/main.rs)| ⭐ ⭐ |
