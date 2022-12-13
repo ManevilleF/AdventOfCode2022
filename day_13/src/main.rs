@@ -131,9 +131,9 @@ fn main() {
         .into_iter()
         .enumerate()
         .filter_map(|(i, pair)| {
-            let is_ordered = pair.left.ordered_with(pair.right);
-            println!("{is_ordered:?}\n");
-            is_ordered.unwrap_or(false).then_some(i + 1)
+            let is_ordered = pair.left.ordered_with(pair.right).unwrap();
+            println!("ORDERED = {is_ordered}\n");
+            is_ordered.then_some(i + 1)
         })
         .sum();
     println!("Part 1: {}", ordered_pairs);
