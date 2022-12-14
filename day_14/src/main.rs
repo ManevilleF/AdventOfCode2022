@@ -75,12 +75,8 @@ impl FromStr for Cave {
                     let (x, y) = str
                         .split_once(',')
                         .ok_or_else(|| format!("`{str}` is not a valid coordinate"))?;
-                    let x = x
-                        .parse()
-                        .map_err(|_| format!("`{x}` is not a valid number"))?;
-                    let y = y
-                        .parse()
-                        .map_err(|_| format!("`{y}` is not a valid number"))?;
+                    let x = x.parse().map_err(|_| format!("`{x}` is not a number"))?;
+                    let y = y.parse().map_err(|_| format!("`{y}` is not a number"))?;
                     Ok([x, y])
                 })
                 .collect::<Result<_, Self::Err>>()?;
