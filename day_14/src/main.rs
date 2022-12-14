@@ -8,8 +8,7 @@ struct Cave {
     rocks: HashSet<Coord>,
     resting_sand: HashSet<Coord>,
     current_sand_coord: Coord,
-    min: Coord,
-    max: Coord,
+    max_y: isize,
 }
 
 impl Cave {
@@ -17,7 +16,7 @@ impl Cave {
 
     fn tick(&mut self, floor: Option<isize>) -> bool {
         let [x, y] = self.current_sand_coord;
-        if floor.is_none() && y > self.max[1] {
+        if floor.is_none() && y > self.max_y {
             return false;
         }
 
@@ -44,10 +43,9 @@ impl Cave {
         true
     }
 
-    fn print(&self) {
-        let min = [self.min[0] - 5, self.min[1].min(0)];
-        for y in min[1]..=(self.max[1] + 5) {
-            for x in min[0]..=(self.max[0] + 5) {
+    fn print(&self, min_x: isize, max_x: isize, max_y: isize) {
+        for y in 0..=max_y {
+            for x in min_x..=max_x {
                 let coord = [x, y];
                 let char = match coord {
                     SAND_SOURCE => '+',
@@ -68,8 +66,7 @@ impl FromStr for Cave {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut rocks = HashSet::new();
-        let mut min = [isize::MAX; 2];
-        let mut max = [0; 2];
+        let mut max_y = 0;
 
         for line in s.lines() {
             let coords: Vec<Coord> = line
@@ -96,18 +93,14 @@ impl FromStr for Cave {
                     start[1] += dir[1];
                 }
                 rocks.insert(end);
-                max[0] = max[0].max(start[0]).max(end[0]);
-                max[1] = max[1].max(start[1]).max(end[1]);
-                min[0] = min[0].min(start[0]).min(end[0]);
-                min[1] = min[1].min(start[1]).min(end[1]);
+                max_y = max_y.max(start[1]).max(end[1]);
             }
         }
         Ok(Self {
             rocks,
             resting_sand: HashSet::default(),
             current_sand_coord: SAND_SOURCE,
-            min,
-            max,
+            max_y,
         })
     }
 }
@@ -118,12 +111,12 @@ fn main() {
     // Part 1
     let mut cave = Cave::from_str(input).unwrap();
     while cave.tick(None) {}
-    cave.print();
+    cave.print(430, 550, 100);
     println!("Part 1: {}", cave.resting_sand.len());
 
     // Part 2
     let mut cave = Cave::from_str(input).unwrap();
-    while cave.tick(Some(cave.max[1] + 2)) {}
-    cave.print();
+    while cave.tick(Some(cave.max_y + 2)) {}
+    cave.print(430, 550, 100);
     println!("Part 2: {}", cave.resting_sand.len());
 }
