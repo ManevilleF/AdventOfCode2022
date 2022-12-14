@@ -1,6 +1,6 @@
 use std::{collections::HashSet, str::FromStr};
 
-type Coord = [isize; 2];
+type Coord = [i16; 2];
 
 const SAND_SOURCE: Coord = [500, 0];
 
@@ -8,13 +8,13 @@ struct Cave {
     rocks: HashSet<Coord>,
     resting_sand: HashSet<Coord>,
     current_sand_coord: Coord,
-    max_y: isize,
+    max_y: i16,
 }
 
 impl Cave {
     const SAND_DIRS: [Coord; 3] = [[0, 1], [-1, 1], [1, 1]];
 
-    fn tick(&mut self, floor: Option<isize>) -> bool {
+    fn tick(&mut self, floor: Option<i16>) -> bool {
         let [x, y] = self.current_sand_coord;
         if floor.is_none() && y > self.max_y {
             return false;
@@ -43,7 +43,7 @@ impl Cave {
         true
     }
 
-    fn print(&self, min_x: isize, max_x: isize) {
+    fn print(&self, min_x: i16, max_x: i16) {
         for y in 0..=self.max_y {
             for x in min_x..=max_x {
                 let coord = [x, y];
