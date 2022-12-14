@@ -43,16 +43,16 @@ impl Cave {
         true
     }
 
-    fn print(&self, min_x: isize, max_x: isize, max_y: isize) {
-        for y in 0..=max_y {
+    fn print(&self, min_x: isize, max_x: isize) {
+        for y in 0..=self.max_y {
             for x in min_x..=max_x {
                 let coord = [x, y];
                 let char = match coord {
                     SAND_SOURCE => '+',
                     _ if coord == self.current_sand_coord => 'x',
-                    _ if self.rocks.contains(&coord) => '#',
-                    _ if self.resting_sand.contains(&coord) => 'o',
-                    _ => '.',
+                    _ if self.rocks.contains(&coord) => '█',
+                    _ if self.resting_sand.contains(&coord) => '░',
+                    _ => ' ',
                 };
                 print!("{char}");
             }
@@ -107,12 +107,12 @@ fn main() {
     // Part 1
     let mut cave = Cave::from_str(input).unwrap();
     while cave.tick(None) {}
-    cave.print(430, 550, 100);
+    cave.print(400, 600);
     println!("Part 1: {}", cave.resting_sand.len());
 
     // Part 2
     let mut cave = Cave::from_str(input).unwrap();
     while cave.tick(Some(cave.max_y + 2)) {}
-    cave.print(430, 550, 100);
+    cave.print(400, 600);
     println!("Part 2: {}", cave.resting_sand.len());
 }
