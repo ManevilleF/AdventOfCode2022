@@ -45,6 +45,7 @@ impl Cave {
 
     fn print(&self, min_x: i16, max_x: i16) {
         for y in 0..=self.max_y {
+            let mut line = String::new();
             for x in min_x..=max_x {
                 let coord = [x, y];
                 let char = match coord {
@@ -54,9 +55,9 @@ impl Cave {
                     _ if self.resting_sand.contains(&coord) => '░',
                     _ => ' ',
                 };
-                print!("{char}");
+                line.push(char);
             }
-            println!();
+            println!("{line}");
         }
     }
 }
@@ -103,9 +104,9 @@ impl FromStr for Cave {
 
 fn main() {
     let input = include_str!("../input.txt");
+    let mut cave = Cave::from_str(input).unwrap();
 
     // Part 1
-    let mut cave = Cave::from_str(input).unwrap();
     while cave.tick(None) {}
     cave.print(400, 600);
     println!("Part 1: {}", cave.resting_sand.len());
