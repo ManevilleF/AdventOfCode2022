@@ -1,4 +1,4 @@
-use std::{collections::HashSet, str::FromStr};
+use std::str::FromStr;
 
 type Coord = [i64; 2];
 
@@ -8,13 +8,11 @@ const fn dist([x, y]: Coord, [x2, y2]: Coord) -> u64 {
 
 struct Sensor {
     pos: Coord,
-    closest_beacon: Coord,
     dist: u64,
 }
 
 struct Sensors {
     sensors: Vec<Sensor>,
-    beacons: HashSet<Coord>,
     min: Coord,
     max: Coord,
 }
@@ -43,17 +41,18 @@ impl Sensors {
         (self.min[0]..=self.max[0])
             .filter(|x| {
                 let coord = [*x, row];
-                !self.beacons.contains(&coord) && self.sensors.iter().any(|s| s.is_in_range(coord))
+                self.sensors.iter().any(|s| s.is_in_range(coord))
             })
             .count()
+            - 1
     }
 
     fn find_distress_beacon(&self) -> Option<Coord> {
         for sensor in &self.sensors {
-            for p in sensor.border_positions() {
-                if p[0] < 0 || p[1] < 0 || p[0] > 4_000_000 || p[1] > 4_000_000 {
-                    continue;
-                }
+            for p in sensor
+                .border_positions()
+                .filter(|p| p[0] > 0 && p[1] > 0 && p[0] < 4_000_000 && p[1] < 4_000_000)
+            {
                 if self.sensors.iter().all(|s| !s.is_in_range(p)) {
                     return Some(p);
                 }
@@ -84,7 +83,6 @@ impl FromStr for Sensor {
         Ok(Self {
             dist: dist(pos, closest_beacon),
             pos,
-            closest_beacon,
         })
     }
 }
@@ -95,24 +93,17 @@ impl FromStr for Sensors {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut min = [i64::MAX; 2];
         let mut max = [i64::MIN; 2];
-        let mut beacons = HashSet::new();
 
         let sensors: Vec<_> = s.lines().map(Sensor::from_str).collect::<Result<_, _>>()?;
 
         for sensor in &sensors {
-            beacons.insert(sensor.closest_beacon);
             let dist = sensor.dist as i64;
             min[0] = min[0].min(sensor.pos[0] - dist);
             max[0] = max[0].max(sensor.pos[0] + dist);
             min[1] = min[1].min(sensor.pos[1] - dist);
             max[1] = max[1].max(sensor.pos[1] + dist);
         }
-        Ok(Self {
-            sensors,
-            beacons,
-            min,
-            max,
-        })
+        Ok(Self { sensors, min, max })
     }
 }
 
