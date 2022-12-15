@@ -104,12 +104,10 @@ impl FromStr for Sensors {
         for sensor in &sensors {
             beacons.insert(sensor.closest_beacon);
             let dist = sensor.dist as i64;
-            let [x_min, x_max] = [sensor.pos[0] - dist, sensor.pos[0] + dist];
-            let [y_min, y_max] = [sensor.pos[1] - dist, sensor.pos[1] + dist];
-            min[0] = min[0].min(x_min);
-            max[0] = max[0].max(x_max);
-            min[1] = min[1].min(y_min);
-            max[1] = max[1].max(y_max);
+            min[0] = min[0].min(sensor.pos[0] - dist);
+            max[0] = max[0].max(sensor.pos[0] + dist);
+            min[1] = min[1].min(sensor.pos[1] - dist);
+            max[1] = max[1].max(sensor.pos[1] + dist);
         }
         Ok(Self {
             sensors,
