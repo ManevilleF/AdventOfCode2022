@@ -44,14 +44,13 @@ impl Sensors {
                 self.sensors.iter().any(|s| s.is_in_range(coord))
             })
             .count()
-            - 1
     }
 
-    fn find_distress_beacon(&self) -> Option<Coord> {
+    fn find_distress_beacon(&self, max: i64) -> Option<Coord> {
         for sensor in &self.sensors {
             for p in sensor
                 .border_positions()
-                .filter(|p| p[0] > 0 && p[1] > 0 && p[0] < 4_000_000 && p[1] < 4_000_000)
+                .filter(|p| p[0] > 0 && p[1] > 0 && p[0] < max && p[1] < max)
             {
                 if self.sensors.iter().all(|s| !s.is_in_range(p)) {
                     return Some(p);
@@ -111,9 +110,12 @@ fn main() {
     let input = include_str!("../input.txt");
     let sensors = Sensors::from_str(input).unwrap();
     // Part 1
-    println!("Part 1: {} positions", sensors.no_beacons_in_row(2_000_000));
+    println!(
+        "Part 1: {} positions",
+        sensors.no_beacons_in_row(2_000_000) - 1
+    );
     // Part 2
-    let [x, y] = sensors.find_distress_beacon().unwrap();
+    let [x, y] = sensors.find_distress_beacon(4_000_000).unwrap();
     println!(
         "Part : Beacon at [{x},{y}]: frequency = {}",
         x * 4_000_000 + y
