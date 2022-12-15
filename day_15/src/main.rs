@@ -22,12 +22,21 @@ struct Sensors {
 }
 
 impl Sensor {
-    const fn beacon_distance(&self) -> u64 {
-        self.dist
+    const fn is_in_range(&self, [x, y]: Coord) -> bool {
+        self.pos[0].abs_diff(x) + self.pos[1].abs_diff(y) <= self.dist
     }
 
-    const fn is_in_range(&self, [x, y]: Coord) -> bool {
-        self.pos[0].abs_diff(x) + self.pos[1].abs_diff(y) <= self.beacon_distance()
+    fn border_positions(&self) -> impl Iterator<Item = Coord> {
+        let dist = self.dist as i64 + 1;
+        let [x, y] = self.pos;
+        (0..=dist).flat_map(move |i| {
+            [
+                [x - dist - i, y - i],
+                [x + dist - i, y - i],
+                [x - dist - i, y + i],
+                [x + dist - i, y + i],
+            ]
+        })
     }
 }
 
@@ -43,22 +52,12 @@ impl Sensors {
 
     fn find_distress_beacon(&self) -> Option<Coord> {
         for sensor in &self.sensors {
-            let dist = sensor.dist as i64 + 1;
-            let [x, y] = sensor.pos;
-            for i in 0..=dist {
-                let positions = [
-                    [x - dist - i, y - i],
-                    [x + dist - i, y - i],
-                    [x - dist - i, y + i],
-                    [x + dist - i, y + i],
-                ];
-                for p in positions {
-                    if p[0] < 0 || p[1] < 0 || p[0] > 4_000_000 || p[1] > 4_000_000 {
-                        continue;
-                    }
-                    if self.sensors.iter().all(|s| !s.is_in_range(p)) {
-                        return Some(p);
-                    }
+            for p in sensor.border_positions() {
+                if p[0] < 0 || p[1] < 0 || p[0] > 4_000_000 || p[1] > 4_000_000 {
+                    continue;
+                }
+                if self.sensors.iter().all(|s| !s.is_in_range(p)) {
+                    return Some(p);
                 }
             }
         }
