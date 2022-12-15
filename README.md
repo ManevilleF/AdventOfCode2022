@@ -22,3 +22,4 @@ I attempted to produce clean code using best practices, a very restrictive clipp
 | 12 | [Hill Climbing Algorithm](day_12/src/main.rs)| ⭐ ⭐ |
 | 13 | [Distress Signal](day_13/src/main.rs)| ⭐ ⭐ |
 | 14 | [Regolith Reservoir](day_14/src/main.rs)| ⭐ ⭐ |
+| 15 | [Beacon Exclusion Zone](day_15/src/main.rs)| ⭐ ⭐ |
