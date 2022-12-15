@@ -6,14 +6,12 @@ const fn dist([x, y]: Coord, [x2, y2]: Coord) -> u64 {
     x.abs_diff(x2) + y.abs_diff(y2)
 }
 
-#[derive(Debug)]
 struct Sensor {
     pos: Coord,
     closest_beacon: Coord,
     dist: u64,
 }
 
-#[derive(Debug)]
 struct Sensors {
     sensors: Vec<Sensor>,
     beacons: HashSet<Coord>,
@@ -121,7 +119,6 @@ impl FromStr for Sensors {
 fn main() {
     let input = include_str!("../input.txt");
     let sensors = Sensors::from_str(input).unwrap();
-    // println!("{sensors:#?}");
     // Part 1
     println!("Part 1: {} positions", sensors.no_beacons_in_row(2_000_000));
     // Part 2
