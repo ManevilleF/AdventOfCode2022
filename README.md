@@ -23,3 +23,4 @@ I attempted to produce clean code using best practices, a very restrictive clipp
 | 13 | [Distress Signal](day_13/src/main.rs)| ⭐ ⭐ |
 | 14 | [Regolith Reservoir](day_14/src/main.rs)| ⭐ ⭐ |
 | 15 | [Beacon Exclusion Zone](day_15/src/main.rs)| ⭐ ⭐ |
+| 16 | [Proboscidea Volcaniu](day_16/src/main.rs)| |
